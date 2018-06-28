@@ -1,0 +1,3 @@
+class nodesElements {
+    router: string;
+}
