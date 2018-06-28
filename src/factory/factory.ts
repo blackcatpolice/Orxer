@@ -1,10 +1,14 @@
-class factory {
+class factory implements dataFactory {
     context: orxerContext;
     constructor(_context: orxerContext) {
         this.context = _context;
         this.context.debug && (window['oxercontext'] = this.context)
-        this.context.data && this.context.data.process()
-        this.context.nodes&& this.context.nodes.process()
+        //this.context.data && this.processOxerData(this.context.data)
+        // this.context.nodes &&  
+    }
+
+    public processOxerData(data: orxerData) {
+        //this.processOxerData(this.context.data)
     }
 }
 
