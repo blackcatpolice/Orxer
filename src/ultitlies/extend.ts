@@ -8,15 +8,16 @@ if (!Object.prototype['extend']) {
             var o = new Object();
 
             Object.keys(extObj).forEach(function (item) {
-                if(_this.hasOwnProperty(item)){
-                    if(typeof _this[item] === "object") {
+                if (_this.hasOwnProperty(item)) {
+                    if (typeof _this[item] === "object") {
                         _this[item].extend(extObj[item]);
                     }
-                } else{
+                } else {
                     _this[item] = extObj[item];
-                } 
+                }
             });
             return o;
         }
     });
 }
+

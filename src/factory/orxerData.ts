@@ -1,3 +1,0 @@
-class orxerData extends Object { 
-    
-}
