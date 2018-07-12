@@ -1,126 +1,40 @@
-var __extends = (this && this.__extends) || (function () {
-    var extendStatics = Object.setPrototypeOf ||
-        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
-    return function (d, b) {
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    };
-})();
 function Oxer(option) {
-    var context;
+    if (option.data) {
+    }
+    if (option.enablDebug) {
+    }
+    if (option.enableRout) {
+    }
+    var elementArr;
+    switch (typeof option.nodes) {
+        case 'string':
+            break;
+        case typeof oxerElement:
+            break;
+        case typeof elementArr:
+            break;
+        default:
+            break;
+    }
 }
-var context = (function () {
-    function context() {
-        this.dataStorage = new dataStorage(this);
+var oxerElement = (function () {
+    function oxerElement() {
     }
-    context.prototype.processor = function () {
-        this.dataStorage.dataProcess();
+    oxerElement.createElement = function () {
+        return new oxerElement();
     };
-    context.prototype.processProp = function (dataObject, dataPropName) {
-        var data = this.data;
-        if (data) {
-            for (var propName in data) {
-                if (data.hasOwnProperty(propName)) {
-                    var curObj = data[propName];
-                    var dataFullKey = dataPropName && (dataPropName + '.' + propName) || propName;
-                    if (typeof curObj == 'object' && !(curObj instanceof Array)) {
-                        this.processProp(dataObject, dataFullKey);
-                        continue;
-                    }
-                    else {
-                        this.watcher(dataObject, propName, dataFullKey);
-                    }
-                }
-            }
-        }
-    };
-    context.prototype.getFullKey = function (option) {
-        var key = '';
-        if (option && option.bind) {
-            if (option.parent && option.parent.bind) {
-                key = this.getFullKey(option.parent) + "." + option.bind;
-            }
-            else {
-                key = option.bind;
-            }
-        }
-        return key;
-    };
-    context.prototype.watcher = function (dataObj, dataKey, dataFullKey) {
-        var contextPointer = this;
-        Object.defineProperty(dataObj, dataKey, {
-            get: function () {
-                return this[dataKey];
-            },
-            set: function (val) {
-                this[dataKey] = val;
-                contextPointer.watcherTable && contextPointer.watcherTable.forEach(function (item) {
-                    item.func(item.el, val);
-                });
-            },
-            enumerable: true,
-            configurable: true
-        });
-    };
-    return context;
+    return oxerElement;
 }());
-var dataStorage = (function () {
-    function dataStorage(_context) {
-        this.context = _context;
+var oxerOption = (function () {
+    function oxerOption() {
     }
-    dataStorage.prototype.dataProcess = function () {
-        var data = this.context.data;
-        if (data) {
-            for (var key in data) {
-                if (data.hasOwnProperty(key)) {
-                    var element = data[key];
-                    if (typeof element == 'object' && !(element instanceof Array)) {
-                        continue;
-                    }
-                    else {
-                    }
-                }
-            }
-        }
-    };
-    return dataStorage;
+    return oxerOption;
 }());
-var oxerdata = (function (_super) {
-    __extends(oxerdata, _super);
-    function oxerdata() {
-        return _super !== null && _super.apply(this, arguments) || this;
+var oxerSolot = (function () {
+    function oxerSolot() {
     }
-    oxerdata.prototype.getValue = function (key) {
-        var obj = this;
-        if (obj && key) {
-            var dataKeyStack = key.split('.').reverse();
-            var targetProp = obj;
-            while (dataKeyStack.length > 0) {
-                var _key = dataKeyStack.pop();
-                targetProp = targetProp[_key];
-            }
-            return targetProp;
-        }
-    };
-    oxerdata.prototype.setValue = function (key, value) {
-        var obj = this;
-        if (obj && key) {
-            var dataKeyStack = key.split('.').reverse();
-            var targetProp = obj;
-            while (dataKeyStack.length > 0) {
-                var _key = dataKeyStack.pop();
-                if (dataKeyStack.length > 0)
-                    targetProp = targetProp[_key];
-                else
-                    targetProp[_key] = value;
-            }
-            return targetProp;
-        }
-    };
-    return oxerdata;
-}(Object));
+    return oxerSolot;
+}());
 if (!Object.prototype['clone']) {
     Object.defineProperty(Object.prototype, 'clone', {
         value: function () {
