@@ -56,7 +56,7 @@ function Oxer(_option: oxerOption | any) {
                 this[key] = val;
                 if (option.watchTable[fullKeyName]) {
                     option.watchTable[fullKeyName].forEach(watchItem => {
-                        watchItem.func(watchItem.ele, val)
+                        watchItem.func.call(option.data, watchItem.ele, val)
                     });
                 }
             },
@@ -88,5 +88,5 @@ function Oxer(_option: oxerOption | any) {
                 break;
         }
     }
-    /**End Process Nodes */    
+    /**End Process Nodes */
 }

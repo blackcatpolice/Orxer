@@ -51,7 +51,7 @@ function Oxer(_option) {
                 _this[key] = val;
                 if (option.watchTable[fullKeyName]) {
                     option.watchTable[fullKeyName].forEach(function (watchItem) {
-                        watchItem.func(watchItem.ele, val);
+                        watchItem.func.call(option.data, watchItem.ele, val);
                     });
                 }
             },
@@ -191,7 +191,7 @@ var oxerElement = (function () {
                     _this.slot.watchTable = [];
                 if (_this.slot.watchTable[fullKeyName]) {
                     _this.slot.watchTable[fullKeyName].forEach(function (watchItem) {
-                        watchItem.func(watchItem.ele, val);
+                        watchItem.func.call(_this.slot.data, watchItem.ele, val);
                     });
                 }
             },
@@ -318,9 +318,11 @@ function Div(_slot) {
     if (!_slot) {
         _slot = new oxerSlot();
     }
-    _slot.bindProcessor = function (ele, value) {
-        ele.innerText = value;
-    };
+    if (!_slot.bindProcessor) {
+        _slot.bindProcessor = function (ele, value) {
+            ele.innerText = value;
+        };
+    }
     return box('div', _slot);
 }
 if (!Object.prototype['clone']) {

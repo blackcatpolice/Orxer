@@ -28,7 +28,7 @@
                         },
                         bind: 'age',
                         bindProcessor: function (ele, value) {
-                            ele.innerHtml = this.user
+                            ele.innerText = this.user + '...' + value
                         },
                         event: {
                             click: function (event) {

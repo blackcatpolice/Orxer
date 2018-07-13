@@ -128,7 +128,7 @@ class oxerElement {
 
                 if (this.slot.watchTable[fullKeyName]) {
                     this.slot.watchTable[fullKeyName].forEach(watchItem => {
-                        watchItem.func(watchItem.ele, val)
+                        watchItem.func.call(this.slot.data, watchItem.ele, val)
                     });
                 }
             },
