@@ -180,6 +180,7 @@ class oxerElement {
     //对绑定的data对象进行渲染, 渲染方式由bindProcessor提供
     /** Process Slot Bind */
     private slotBind(element: HTMLElement) {
+        var _this = this;
         var key = this.slotBindFullKey(this.slot);
         //渲染初始化的值
         var currentValue = this.getSlotBindValue(key)
@@ -190,7 +191,19 @@ class oxerElement {
         }
         this.option.watchTable[key].push({
             ele: element,
-            func: this.slot.bindProcessor
+            func: function (ele, val) {
+                //merge global data 
+                var currentInstance = this;
+                if (!this.slot.data) {
+                    this.slot.data = {}
+                }
+                Object.keys(this).forEach(itemKey => {
+                    if (!_this.slot.data[itemKey]) {
+                        _this.slot.data[itemKey] = currentInstance[itemKey]
+                    }
+                })
+                this.bindProcessor.call(_this.slot.data, ele, val)
+            }
         })
     }
 
