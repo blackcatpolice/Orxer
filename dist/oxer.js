@@ -337,6 +337,23 @@ function Div(_slot) {
     }
     return box('div', _slot);
 }
+function Input(_slot) {
+    if (!_slot) {
+        _slot = new oxerSlot();
+    }
+    if (!_slot.bindProcessor) {
+        _slot.bindProcessor = function (ele, value) {
+            ele.value = value;
+        };
+    }
+    if (!_slot.event) {
+        _slot.event = {};
+    }
+    _slot.event['keypress'] = function (event) {
+        this.name = event.target.value;
+    };
+    return box('input', _slot);
+}
 if (!Object.prototype['clone']) {
     Object.defineProperty(Object.prototype, 'clone', {
         value: function () {

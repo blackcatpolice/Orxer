@@ -20,21 +20,31 @@
         },
         nodes: [
             Div({
-                bind: 'name',
                 nodes: [
                     Div({
                         data: {
-                            user: 'lnn'
+                            name: 'lnn'
                         },
                         bind: 'age',
                         bindProcessor: function (ele, value) {
-                            ele.innerText = this.user + '...' + value
+                            ele.innerText = this.name + '...' + value
                         },
                         event: {
                             click: function (event) {
                                 this.age++;
                             }
-                        }
+                        },
+                        nodes:[
+                            Input({
+                                
+                            })
+                        ]
+                    }),
+                    Div({
+                        bind: 'name'
+                    }),
+                    Input({
+
                     })
                 ]
             })
@@ -103,7 +113,6 @@
     //         bFooter({})
     //     ]
     // })
-
 </script>
 
 </html>
