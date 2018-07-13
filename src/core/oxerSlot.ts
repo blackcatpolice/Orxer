@@ -7,4 +7,5 @@ class oxerSlot {
     public nodes: any;
     public parent: oxerSlot;
     public children: Array<oxerSlot>;
+    public watchTable: any;
 }

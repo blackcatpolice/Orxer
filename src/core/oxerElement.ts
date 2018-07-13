@@ -39,6 +39,7 @@ class oxerElement {
                     this.slotEvent(element);
                     break;
                 case 'data':
+                    this.slotData();
                     break;
                 case 'class':
                     this.slotClass(element);
@@ -76,6 +77,66 @@ class oxerElement {
         }
     }
     /**End Process Slot Event */
+
+    //处理slot 绑定data 对象
+    /**Process Slot Data */
+    private slotData() {
+        //把slot中定义的变量导入
+        if (this.slot.data)
+            this.loopProperty(this.slot.data)
+
+        //把全局变量导向到slot 变量
+        for (var key in this.option) {
+            if (this.option.hasOwnProperty(key)) {
+                var item = this.option[key];
+                if (!this.slot.data[key]) {
+                    this.slot.data[key] = item;
+                }
+            }
+        }
+    }
+
+
+    private loopProperty(data, dataName?: string) {
+        if (!data) {
+            console.warn('slot data is null')
+            return;
+        }
+
+        for (var key in data) {
+            if (data.hasOwnProperty(key)) {
+                var dataItem = data[key];
+                var fullKeyName = dataName && (dataName + '.' + key) || key;
+                if (typeof dataItem == 'object' && !(dataItem instanceof Array)) {
+                    this.loopProperty(dataItem, fullKeyName)
+                } else {
+                    this.setPropertyWatcher(data, key, fullKeyName)
+                }
+            }
+        }
+    }
+
+    private setPropertyWatcher(obj, key, fullKeyName) {
+        var tmpValue = obj[key];
+        Object.defineProperty(obj, key, {
+            get: () => {
+                return this[key]
+            },
+            set: val => {
+                this[key] = val;
+                if (this.slot.watchTable[fullKeyName]) {
+                    this.slot.watchTable[fullKeyName].forEach(watchItem => {
+                        watchItem.func(watchItem.ele, val)
+                    });
+                }
+            },
+            enumerable: true,
+            configurable: true
+        })
+        obj[key] = tmpValue;
+    }
+    /**End Process Slot Data */
+
 
     //对绑定的 class 进行处理
     /**Process Slot Class */
@@ -139,7 +200,7 @@ class oxerElement {
                     _processor(element, value)
                 });
             } else {
-                this.slot.bindProcessor(element, value)
+                this.slot.bindProcessor.call(this.slot.data, element, value)
             }
         }
     }

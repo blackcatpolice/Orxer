@@ -24,6 +24,9 @@
                 nodes: [
                     Div({
                         bind: 'age',
+                        bindProcessor: function (ele, value) {
+
+                        },
                         event: {
                             click: function (event) {
                                 this.age++;
