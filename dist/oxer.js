@@ -242,15 +242,15 @@ var oxerElement = (function () {
             ele: element,
             func: function (ele, val) {
                 var currentInstance = this;
-                if (!this.slot.data) {
-                    this.slot.data = {};
+                if (!_this.slot.data) {
+                    _this.slot.data = {};
                 }
                 Object.keys(this).forEach(function (itemKey) {
                     if (!_this.slot.data[itemKey]) {
                         _this.slot.data[itemKey] = currentInstance[itemKey];
                     }
                 });
-                this.bindProcessor.call(_this.slot.data, ele, val);
+                _this.slot.bindProcessor.call(_this.slot.data, ele, val);
             }
         });
     };
