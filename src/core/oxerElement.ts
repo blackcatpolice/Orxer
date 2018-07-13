@@ -124,6 +124,8 @@ class oxerElement {
             },
             set: val => {
                 this[key] = val;
+                if (!this.slot.watchTable) this.slot.watchTable = [];
+
                 if (this.slot.watchTable[fullKeyName]) {
                     this.slot.watchTable[fullKeyName].forEach(watchItem => {
                         watchItem.func(watchItem.ele, val)

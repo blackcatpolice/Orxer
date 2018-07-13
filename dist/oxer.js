@@ -114,6 +114,7 @@ var oxerElement = (function () {
                     _this.slotEvent(element);
                     break;
                 case 'data':
+                    _this.slotData();
                     break;
                 case 'class':
                     _this.slotClass(element);
@@ -146,6 +147,58 @@ var oxerElement = (function () {
                 };
             }
         }
+    };
+    oxerElement.prototype.slotData = function () {
+        if (this.slot.data)
+            this.loopProperty(this.slot.data);
+        for (var key in this.option) {
+            if (this.option.hasOwnProperty(key)) {
+                var item = this.option[key];
+                if (!this.slot.data[key]) {
+                    this.slot.data[key] = item;
+                }
+            }
+        }
+    };
+    oxerElement.prototype.loopProperty = function (data, dataName) {
+        if (!data) {
+            console.warn('slot data is null');
+            return;
+        }
+        for (var key in data) {
+            if (data.hasOwnProperty(key)) {
+                var dataItem = data[key];
+                var fullKeyName = dataName && (dataName + '.' + key) || key;
+                if (typeof dataItem == 'object' && !(dataItem instanceof Array)) {
+                    this.loopProperty(dataItem, fullKeyName);
+                }
+                else {
+                    this.setPropertyWatcher(data, key, fullKeyName);
+                }
+            }
+        }
+    };
+    oxerElement.prototype.setPropertyWatcher = function (obj, key, fullKeyName) {
+        var _this = this;
+        var tmpValue = obj[key];
+        Object.defineProperty(obj, key, {
+            get: function () {
+                return _this[key];
+            },
+            set: function (val) {
+                _this[key] = val;
+                if (!_this.slot.watchTable)
+                    _this.slot.watchTable = [];
+                if (_this.slot.watchTable[fullKeyName]) {
+                    _this.slot.watchTable[fullKeyName].forEach(function (watchItem) {
+                        watchItem.func(watchItem.ele, val);
+                    });
+                }
+            },
+            enumerable: true,
+            configurable: true
+        });
+        obj[key] = tmpValue;
     };
     oxerElement.prototype.slotClass = function (element) {
         if (!this.slot["class"] || this.slot["class"].length == 0) {
@@ -197,7 +250,7 @@ var oxerElement = (function () {
                 });
             }
             else {
-                this.slot.bindProcessor(element, value);
+                this.slot.bindProcessor.call(this.slot.data, element, value);
             }
         }
     };

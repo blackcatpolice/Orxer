@@ -23,9 +23,12 @@
                 bind: 'name',
                 nodes: [
                     Div({
+                        data: {
+                            user: 'lnn'
+                        },
                         bind: 'age',
                         bindProcessor: function (ele, value) {
-
+                            ele.innerHtml = this.user
                         },
                         event: {
                             click: function (event) {
