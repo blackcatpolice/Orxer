@@ -90,40 +90,40 @@ var oxerElement = (function () {
     };
     ;
     oxerElement.prototype.createElement = function () {
-        var _this = this;
+        var _this_1 = this;
         return function (option, parentSlot) {
-            _this.option = option;
-            var _ele = document.createElement(_this.tagName);
+            _this_1.option = option;
+            var _ele = document.createElement(_this_1.tagName);
             if (parentSlot) {
                 if (!parentSlot.children) {
                     parentSlot.children = [];
                 }
-                parentSlot.children.push(_this.slot);
-                _this.slot.parent = parentSlot;
+                parentSlot.children.push(_this_1.slot);
+                _this_1.slot.parent = parentSlot;
             }
-            _this.processSlot(_ele);
+            _this_1.processSlot(_ele);
             return _ele;
         };
     };
     oxerElement.prototype.processSlot = function (element) {
-        var _this = this;
+        var _this_1 = this;
         Object.keys(this.slot).forEach(function (slotItemKey) {
-            var slotItem = _this.slot[slotItemKey];
+            var slotItem = _this_1.slot[slotItemKey];
             switch (slotItemKey) {
                 case 'event':
-                    _this.slotEvent(element);
+                    _this_1.slotEvent(element);
                     break;
                 case 'data':
-                    _this.slotData();
+                    _this_1.slotData();
                     break;
                 case 'class':
-                    _this.slotClass(element);
+                    _this_1.slotClass(element);
                     break;
                 case 'bind':
-                    _this.slotBind(element);
+                    _this_1.slotBind(element);
                     break;
                 case 'nodes':
-                    _this.slotNodes(element);
+                    _this_1.slotNodes(element);
                     break;
                 default:
                     break;
@@ -131,7 +131,7 @@ var oxerElement = (function () {
         });
     };
     oxerElement.prototype.slotEvent = function (element) {
-        var _this = this;
+        var _this_1 = this;
         if (!this.slot.event || Object.keys(this.slot.event).length == 0) {
             console.warn('slot event is null or empty');
             return;
@@ -143,7 +143,7 @@ var oxerElement = (function () {
                     eventName = 'on' + eventName;
                 }
                 element[eventName] = function (event) {
-                    eventItem.call(_this.option.data, event);
+                    eventItem.call(_this_1.option.data, event);
                 };
             }
         }
@@ -179,19 +179,19 @@ var oxerElement = (function () {
         }
     };
     oxerElement.prototype.setPropertyWatcher = function (obj, key, fullKeyName) {
-        var _this = this;
+        var _this_1 = this;
         var tmpValue = obj[key];
         Object.defineProperty(obj, key, {
             get: function () {
-                return _this[key];
+                return _this_1[key];
             },
             set: function (val) {
-                _this[key] = val;
-                if (!_this.slot.watchTable)
-                    _this.slot.watchTable = [];
-                if (_this.slot.watchTable[fullKeyName]) {
-                    _this.slot.watchTable[fullKeyName].forEach(function (watchItem) {
-                        watchItem.func.call(_this.slot.data, watchItem.ele, val);
+                _this_1[key] = val;
+                if (!_this_1.slot.watchTable)
+                    _this_1.slot.watchTable = [];
+                if (_this_1.slot.watchTable[fullKeyName]) {
+                    _this_1.slot.watchTable[fullKeyName].forEach(function (watchItem) {
+                        watchItem.func.call(_this_1.slot.data, watchItem.ele, val);
                     });
                 }
             },
@@ -210,7 +210,7 @@ var oxerElement = (function () {
         });
     };
     oxerElement.prototype.slotNodes = function (element) {
-        var _this = this;
+        var _this_1 = this;
         var nodes = this.slot.nodes;
         switch (true) {
             case typeof nodes == 'string':
@@ -223,7 +223,7 @@ var oxerElement = (function () {
                 break;
             case Array.isArray(nodes):
                 nodes.forEach(function (nodeItem) {
-                    element.appendChild(nodeItem(_this.option));
+                    element.appendChild(nodeItem(_this_1.option));
                 });
                 break;
             default:
@@ -231,6 +231,7 @@ var oxerElement = (function () {
         }
     };
     oxerElement.prototype.slotBind = function (element) {
+        var _this = this;
         var key = this.slotBindFullKey(this.slot);
         var currentValue = this.getSlotBindValue(key);
         this.processBindProcessor(element, currentValue);
@@ -239,7 +240,18 @@ var oxerElement = (function () {
         }
         this.option.watchTable[key].push({
             ele: element,
-            func: this.slot.bindProcessor
+            func: function (ele, val) {
+                var currentInstance = this;
+                if (!this.slot.data) {
+                    this.slot.data = {};
+                }
+                Object.keys(this).forEach(function (itemKey) {
+                    if (!_this.slot.data[itemKey]) {
+                        _this.slot.data[itemKey] = currentInstance[itemKey];
+                    }
+                });
+                this.bindProcessor.call(_this.slot.data, ele, val);
+            }
         });
     };
     oxerElement.prototype.processBindProcessor = function (element, value) {

@@ -10,7 +10,7 @@
         "src/**/*",
         "src/**/**/*",
         "pages/**/*",
-        "pages/**",
-        "ultitlies/**"
+        "pages/*",
+        "ultitlies/*"
     ]
 }
