@@ -15,11 +15,22 @@
 <script>
     Oxer({
         data: {
-            name: '1'
+            name: '1',
+            age: 3
         },
         nodes: [
             Div({
-                bind: 'name'
+                bind: 'name',
+                nodes: [
+                    Div({
+                        bind: 'age',
+                        event: {
+                            click: () => { 
+                                alert('test')
+                            }
+                        }
+                    })
+                ]
             })
         ]
     })

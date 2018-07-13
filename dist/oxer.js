@@ -88,11 +88,19 @@ var oxerElement = (function () {
     oxerElement.createInstance = function (tagName, slot) {
         return new oxerElement(tagName, slot);
     };
+    ;
     oxerElement.prototype.createElement = function () {
         var _this = this;
-        return function (option) {
+        return function (option, parentSlot) {
             _this.option = option;
             var _ele = document.createElement(_this.tagName);
+            if (parentSlot) {
+                if (!parentSlot.children) {
+                    parentSlot.children = [];
+                }
+                parentSlot.children.push(_this.slot);
+                _this.slot.parent = parentSlot;
+            }
             _this.processSlot(_ele);
             return _ele;
         };
@@ -103,20 +111,68 @@ var oxerElement = (function () {
             var slotItem = _this.slot[slotItemKey];
             switch (slotItemKey) {
                 case 'event':
+                    _this.slotEvent(element);
                     break;
                 case 'data':
                     break;
                 case 'class':
+                    _this.slotClass(element);
                     break;
                 case 'bind':
                     _this.slotBind(element);
                     break;
                 case 'nodes':
+                    _this.slotNodes(element);
                     break;
                 default:
                     break;
             }
         });
+    };
+    oxerElement.prototype.slotEvent = function (element) {
+        if (!this.slot.event || Object.keys(this.slot.event).length == 0) {
+            console.warn('slot event is null or empty');
+            return;
+        }
+        for (var eventName in this.slot.event) {
+            if (this.slot.event.hasOwnProperty(eventName)) {
+                var eventItem = this.slot.event[eventName];
+                if (!/on\w+/g.test(eventName)) {
+                    eventName = 'on' + eventName;
+                }
+                element[eventName] = eventItem;
+            }
+        }
+    };
+    oxerElement.prototype.slotClass = function (element) {
+        if (!this.slot["class"] || this.slot["class"].length == 0) {
+            console.warn('slot class is empty or null');
+            return;
+        }
+        this.slot["class"].forEach(function (classItem) {
+            element.classList.add(classItem);
+        });
+    };
+    oxerElement.prototype.slotNodes = function (element) {
+        var _this = this;
+        var nodes = this.slot.nodes;
+        switch (true) {
+            case typeof nodes == 'string':
+                var _ele = document.createElement("span");
+                _ele.innerText = nodes;
+                element.appendChild(_ele);
+                break;
+            case !Array.isArray(nodes):
+                element.appendChild(nodes(this.option));
+                break;
+            case Array.isArray(nodes):
+                nodes.forEach(function (nodeItem) {
+                    element.appendChild(nodeItem(_this.option));
+                });
+                break;
+            default:
+                break;
+        }
     };
     oxerElement.prototype.slotBind = function (element) {
         var key = this.slotBindFullKey(this.slot);

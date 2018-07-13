@@ -1,3 +1,4 @@
+//程序主入口
 function Oxer(_option: oxerOption | any) {
     var option = new oxerOption(_option);
 
@@ -20,6 +21,8 @@ function Oxer(_option: oxerOption | any) {
             }
         }
     }
+    //处理主入口传入的data 属性
+    /* Process Data */
     function processData(data) {
         __loopProperty__(data);
     }
@@ -62,7 +65,10 @@ function Oxer(_option: oxerOption | any) {
         })
         obj[key] = tmpValue;
     }
+    /*End Process Data */
 
+    //处理主入口传入的nodes 属性
+    /** Process Nodes */
     function processNodes(nodes) {
         switch (true) {
             case typeof nodes == 'string':
@@ -82,4 +88,5 @@ function Oxer(_option: oxerOption | any) {
                 break;
         }
     }
+    /**End Process Nodes */    
 }
