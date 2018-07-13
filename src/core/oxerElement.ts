@@ -61,16 +61,19 @@ class oxerElement {
         if (!this.slot.event || Object.keys(this.slot.event).length == 0) {
             console.warn('slot event is null or empty')
             return;
-        } 
+        }
         for (var eventName in this.slot.event) {
             if (this.slot.event.hasOwnProperty(eventName)) {
-                var eventItem = this.slot.event[eventName]; 
+                var eventItem = this.slot.event[eventName];
                 if (!/on\w+/g.test(eventName)) {
                     eventName = 'on' + eventName;
                 }
-                element[eventName] = eventItem
+
+                element[eventName] = (event) => {
+                    eventItem.call(this.option.data, event);
+                }
             }
-        } 
+        }
     }
     /**End Process Slot Event */
 
@@ -124,7 +127,7 @@ class oxerElement {
         }
         this.option.watchTable[key].push({
             ele: element,
-            func: this.processBindProcessor
+            func: this.slot.bindProcessor
         })
     }
 

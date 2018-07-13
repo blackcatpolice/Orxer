@@ -130,6 +130,7 @@ var oxerElement = (function () {
         });
     };
     oxerElement.prototype.slotEvent = function (element) {
+        var _this = this;
         if (!this.slot.event || Object.keys(this.slot.event).length == 0) {
             console.warn('slot event is null or empty');
             return;
@@ -140,7 +141,9 @@ var oxerElement = (function () {
                 if (!/on\w+/g.test(eventName)) {
                     eventName = 'on' + eventName;
                 }
-                element[eventName] = eventItem;
+                element[eventName] = function (event) {
+                    eventItem.call(_this.option.data, event);
+                };
             }
         }
     };
@@ -183,7 +186,7 @@ var oxerElement = (function () {
         }
         this.option.watchTable[key].push({
             ele: element,
-            func: this.processBindProcessor
+            func: this.slot.bindProcessor
         });
     };
     oxerElement.prototype.processBindProcessor = function (element, value) {

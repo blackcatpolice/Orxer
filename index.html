@@ -25,8 +25,8 @@
                     Div({
                         bind: 'age',
                         event: {
-                            click: () => { 
-                                alert('test')
+                            click: function (event) {
+                                this.age++;
                             }
                         }
                     })
