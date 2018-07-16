@@ -81,22 +81,23 @@ class oxerElement {
     //处理slot 绑定data 对象
     /**Process Slot Data */
     private slotData() {
+        if (!this.option.data) {
+            return;
+        }
         //把slot中定义的变量导入
-        if (this.slot.data)
-            this.loopProperty(this.slot.data)
-
-        //把全局变量导向到slot 变量
-        for (var key in this.option) {
-            if (this.option.hasOwnProperty(key)) {
-                var item = this.option[key];
-                if (!this.slot.data[key]) {
-                    this.slot.data[key] = item;
+        if (this.slot.data) {
+            //把全局变量导向到slot 变量
+            for (var key in this.option.data) {
+                if (this.option.data.hasOwnProperty(key)) {
+                    var item = this.option.data[key];
+                    if (!this.slot.data[key]) {
+                        this.slot.data[key] = item;
+                    }
                 }
             }
+            this.loopProperty(this.slot.data)
         }
     }
-
-
     private loopProperty(data, dataName?: string) {
         if (!data) {
             console.warn('slot data is null')
@@ -240,7 +241,8 @@ class oxerElement {
     //取出上下文中对象的值
     private getSlotBindValue(key) {
         var dataKeyStack = key.split('.').reverse();
-        var targetProp = this.option.data;
+        //设立优先级, 当前作用域下优先
+        var targetProp = this.slot.data || this.option.data;
         while (dataKeyStack.length > 0) {
             var _key = dataKeyStack.pop();
             targetProp = targetProp[_key]
@@ -249,9 +251,14 @@ class oxerElement {
     }
 
     //设置上下文中对象的值
-    private setSlotBindValue(key, value) {
+    public setSlotBindValue(key, value) {
+        if (!key) {
+            console.warn('has no set bind name')
+            return;
+        }
         var dataKeyStack = key.split('.').reverse();
-        var targetProp = this.option.data;
+        //设立优先级, 当前作用域下优先
+        var targetProp = this.slot.data || this.option.data;
         while (dataKeyStack.length > 0) {
             var _key = dataKeyStack.pop();
             if (dataKeyStack.length > 0)

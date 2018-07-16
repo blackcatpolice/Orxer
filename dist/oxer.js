@@ -90,40 +90,40 @@ var oxerElement = (function () {
     };
     ;
     oxerElement.prototype.createElement = function () {
-        var _this_1 = this;
+        var _this = this;
         return function (option, parentSlot) {
-            _this_1.option = option;
-            var _ele = document.createElement(_this_1.tagName);
+            _this.option = option;
+            var _ele = document.createElement(_this.tagName);
             if (parentSlot) {
                 if (!parentSlot.children) {
                     parentSlot.children = [];
                 }
-                parentSlot.children.push(_this_1.slot);
-                _this_1.slot.parent = parentSlot;
+                parentSlot.children.push(_this.slot);
+                _this.slot.parent = parentSlot;
             }
-            _this_1.processSlot(_ele);
+            _this.processSlot(_ele);
             return _ele;
         };
     };
     oxerElement.prototype.processSlot = function (element) {
-        var _this_1 = this;
+        var _this = this;
         Object.keys(this.slot).forEach(function (slotItemKey) {
-            var slotItem = _this_1.slot[slotItemKey];
+            var slotItem = _this.slot[slotItemKey];
             switch (slotItemKey) {
                 case 'event':
-                    _this_1.slotEvent(element);
+                    _this.slotEvent(element);
                     break;
                 case 'data':
-                    _this_1.slotData();
+                    _this.slotData();
                     break;
                 case 'class':
-                    _this_1.slotClass(element);
+                    _this.slotClass(element);
                     break;
                 case 'bind':
-                    _this_1.slotBind(element);
+                    _this.slotBind(element);
                     break;
                 case 'nodes':
-                    _this_1.slotNodes(element);
+                    _this.slotNodes(element);
                     break;
                 default:
                     break;
@@ -131,7 +131,7 @@ var oxerElement = (function () {
         });
     };
     oxerElement.prototype.slotEvent = function (element) {
-        var _this_1 = this;
+        var _this = this;
         if (!this.slot.event || Object.keys(this.slot.event).length == 0) {
             console.warn('slot event is null or empty');
             return;
@@ -143,21 +143,25 @@ var oxerElement = (function () {
                     eventName = 'on' + eventName;
                 }
                 element[eventName] = function (event) {
-                    eventItem.call(_this_1.option.data, event);
+                    eventItem.call(_this.option.data, event);
                 };
             }
         }
     };
     oxerElement.prototype.slotData = function () {
-        if (this.slot.data)
-            this.loopProperty(this.slot.data);
-        for (var key in this.option) {
-            if (this.option.hasOwnProperty(key)) {
-                var item = this.option[key];
-                if (!this.slot.data[key]) {
-                    this.slot.data[key] = item;
+        if (!this.option.data) {
+            return;
+        }
+        if (this.slot.data) {
+            for (var key in this.option.data) {
+                if (this.option.data.hasOwnProperty(key)) {
+                    var item = this.option.data[key];
+                    if (!this.slot.data[key]) {
+                        this.slot.data[key] = item;
+                    }
                 }
             }
+            this.loopProperty(this.slot.data);
         }
     };
     oxerElement.prototype.loopProperty = function (data, dataName) {
@@ -179,19 +183,19 @@ var oxerElement = (function () {
         }
     };
     oxerElement.prototype.setPropertyWatcher = function (obj, key, fullKeyName) {
-        var _this_1 = this;
+        var _this = this;
         var tmpValue = obj[key];
         Object.defineProperty(obj, key, {
             get: function () {
-                return _this_1[key];
+                return _this[key];
             },
             set: function (val) {
-                _this_1[key] = val;
-                if (!_this_1.slot.watchTable)
-                    _this_1.slot.watchTable = [];
-                if (_this_1.slot.watchTable[fullKeyName]) {
-                    _this_1.slot.watchTable[fullKeyName].forEach(function (watchItem) {
-                        watchItem.func.call(_this_1.slot.data, watchItem.ele, val);
+                _this[key] = val;
+                if (!_this.slot.watchTable)
+                    _this.slot.watchTable = [];
+                if (_this.slot.watchTable[fullKeyName]) {
+                    _this.slot.watchTable[fullKeyName].forEach(function (watchItem) {
+                        watchItem.func.call(_this.slot.data, watchItem.ele, val);
                     });
                 }
             },
@@ -210,7 +214,7 @@ var oxerElement = (function () {
         });
     };
     oxerElement.prototype.slotNodes = function (element) {
-        var _this_1 = this;
+        var _this = this;
         var nodes = this.slot.nodes;
         switch (true) {
             case typeof nodes == 'string':
@@ -223,7 +227,7 @@ var oxerElement = (function () {
                 break;
             case Array.isArray(nodes):
                 nodes.forEach(function (nodeItem) {
-                    element.appendChild(nodeItem(_this_1.option));
+                    element.appendChild(nodeItem(_this.option));
                 });
                 break;
             default:
@@ -282,7 +286,7 @@ var oxerElement = (function () {
     };
     oxerElement.prototype.getSlotBindValue = function (key) {
         var dataKeyStack = key.split('.').reverse();
-        var targetProp = this.option.data;
+        var targetProp = this.slot.data || this.option.data;
         while (dataKeyStack.length > 0) {
             var _key = dataKeyStack.pop();
             targetProp = targetProp[_key];
@@ -290,8 +294,12 @@ var oxerElement = (function () {
         return targetProp;
     };
     oxerElement.prototype.setSlotBindValue = function (key, value) {
+        if (!key) {
+            console.warn('has no set bind name');
+            return;
+        }
         var dataKeyStack = key.split('.').reverse();
-        var targetProp = this.option.data;
+        var targetProp = this.slot.data || this.option.data;
         while (dataKeyStack.length > 0) {
             var _key = dataKeyStack.pop();
             if (dataKeyStack.length > 0)
@@ -325,7 +333,13 @@ var oxerSlot = (function () {
     }
     return oxerSlot;
 }());
-var box = function (tagName, slot) { return oxerElement.createInstance(tagName, slot).createElement(); };
+var box = function (tagName, slot, callback) {
+    var oxEle = oxerElement.createInstance(tagName, slot);
+    if (callback) {
+        callback(oxEle);
+    }
+    return oxEle.createElement();
+};
 function Div(_slot) {
     if (!_slot) {
         _slot = new oxerSlot();
@@ -336,6 +350,17 @@ function Div(_slot) {
         };
     }
     return box('div', _slot);
+}
+function Span(_slot) {
+    if (!_slot) {
+        _slot = new oxerSlot();
+    }
+    if (!_slot.bindProcessor) {
+        _slot.bindProcessor = function (ele, value) {
+            ele.innerText = value;
+        };
+    }
+    return box('span', _slot);
 }
 function Input(_slot) {
     if (!_slot) {
@@ -349,10 +374,15 @@ function Input(_slot) {
     if (!_slot.event) {
         _slot.event = {};
     }
-    _slot.event['keypress'] = function (event) {
+    if (_slot.bind) {
+    }
+    _slot.event['input'] = function (event) {
         this.name = event.target.value;
     };
-    return box('input', _slot);
+    return box('input', _slot, function (_oxEle) {
+        var oxEle;
+        oxEle = _oxEle;
+    });
 }
 if (!Object.prototype['clone']) {
     Object.defineProperty(Object.prototype, 'clone', {

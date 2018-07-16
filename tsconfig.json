@@ -7,8 +7,7 @@
         "sourceMap": false
     },
     "include": [
-        "src/**/*",
-        "src/**/**/*",
+        "src/**/*", 
         "pages/**/*",
         "pages/*",
         "ultitlies/*"

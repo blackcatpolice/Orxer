@@ -27,25 +27,28 @@
                         },
                         bind: 'age',
                         bindProcessor: function (ele, value) {
-                            ele.innerText = this.name + '...' + value
+                            // ele.innerText = this.name + '...' + value
                         },
                         event: {
                             click: function (event) {
                                 this.age++;
                             }
                         },
-                        nodes:[
+                        nodes: [
+                            Span({
+                                bind: 'name'
+                            }),
                             Input({
-                                
+                                bind: 'name'
                             })
                         ]
                     }),
-                    Div({
-                        bind: 'name'
-                    }),
-                    Input({
-
-                    })
+                    // Div({
+                    //     bind: 'name'
+                    // }),
+                    // Input({
+                    //     bind: 'name'
+                    // })
                 ]
             })
         ]
@@ -113,6 +116,7 @@
     //         bFooter({})
     //     ]
     // })
+
 </script>
 
 </html>
